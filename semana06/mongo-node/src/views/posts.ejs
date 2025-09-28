@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media - Posts</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ...estilos igual que antes... */
+    body {
+      background: linear-gradient(135deg, #e0f7fa 0%, #fff 100%);
+    }
+    .card-panel {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 1.5px 3px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      margin-bottom: 32px;
+      transition: box-shadow 0.3s;
+    }
+    .card-panel:hover {
+      box-shadow: 0 16px 32px rgba(0,0,0,0.12), 0 3px 6px rgba(0,0,0,0.08);
+    }
+    .btn-piola {
+      background: linear-gradient(90deg, #26a69a 60%, #00bfae 100%);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(38,166,154,0.2);
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-piola:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 16px rgba(38,166,154,0.25);
+      background: linear-gradient(90deg, #00bfae 60%, #26a69a 100%);
+    }
+    .card-image img {
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      height: 180px;
+      object-fit: cover;
+    }
+    .card {
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(38,166,154,0.08);
+      transition: box-shadow 0.3s;
+    }
+    .card:hover {
+      box-shadow: 0 12px 32px rgba(38,166,154,0.18);
+    }
+    .chip {
+      margin-right: 4px;
+      background: #e0f2f1;
+      color: #00796b;
+      font-weight: 500;
+    }
+    .center-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .input-field label {
+      color: #26a69a !important;
+    }
+    .input-field input:focus + label,
+    .input-field textarea:focus + label {
+      color: #00bfae !important;
+    }
+    .input-field input:focus,
+    .input-field textarea:focus {
+      border-bottom: 2px solid #00bfae !important;
+      box-shadow: 0 1px 0 0 #00bfae !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="/" class="brand-logo center">Social Media</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h4 class="center-align" style="margin-top:32px;">Posts de la Comunidad</h4>
+
+    <!-- Formulario para crear nuevo post -->
+    <div class="row">
+      <form class="col s12 m8 offset-m2 card-panel z-depth-3" action="/posts" method="POST">
+        <h5 class="teal-text center-align">Crear nuevo post</h5>
+        <div class="input-field">
+          <select name="userId" required>
+            <option value="" disabled selected>Selecciona el autor</option>
+            <% users.forEach(user => { %>
+              <option value="<%= user._id %>"><%= user.name %> <%= user.lastName %></option>
+            <% }) %>
+          </select>
+          <label>Autor</label>
+        </div>
+        <div class="input-field">
+          <input id="title" name="title" type="text" required minlength="5" maxlength="30">
+          <label for="title">Título</label>
+        </div>
+        <div class="input-field">
+          <textarea id="content" name="content" class="materialize-textarea" required minlength="10"></textarea>
+          <label for="content">Contenido</label>
+        </div>
+        <div class="input-field">
+          <input id="hashtags" name="hashtags" type="text" placeholder="#ejemplo,#nodejs">
+          <label for="hashtags">Hashtags (separados por coma)</label>
+        </div>
+        <div class="input-field">
+          <input id="imageUrl" name="imageUrl" type="text" placeholder="https://...">
+          <label for="imageUrl">URL de imagen</label>
+        </div>
+        <div class="center-btn" style="margin-top:24px;">
+          <button class="btn btn-piola waves-effect waves-light" type="submit">
+            <i class="material-icons left">add_circle</i> PUBLICAR
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de posts -->
+    <div class="row">
+      <% posts.forEach(post => { %>
+        <div class="col s12 m6 l4">
+          <div class="card hoverable z-depth-2">
+            <div class="card-image">
+              <img src="<%= post.imageUrl || 'https://materializecss.com/images/sample-1.jpg' %>" alt="Imagen del post">
+              <span class="card-title"><%= post.title %></span>
+            </div>
+            <div class="card-content">
+              <p><%= post.content %></p>
+              <p>
+                <strong>Hashtags:</strong>
+                <% if (post.hashtags && post.hashtags.length) { 
+                     post.hashtags.forEach(tag => { %>
+                  <span class="chip">#<%= tag.trim() %></span>
+                <% }) } else { %>
+                  <span class="chip grey lighten-2">Sin hashtags</span>
+                <% } %>
+              </p>
+              <p class="grey-text">
+                <small>Publicado: <%= post.createdAt ? post.createdAt.toLocaleDateString() : '' %></small>
+              </p>
+            </div>
+            <div class="card-action">
+              <span><strong>Autor:</strong> <%= post.user ? post.user.name : 'Anónimo' %></span>
+              <div class="right">
+                <a href="/posts/<%= post._id %>/edit" class="btn-flat tooltipped" data-position="top" data-tooltip="Editar">
+                  <i class="material-icons teal-text">edit</i>
+                </a>
+                <form action="/posts/<%= post._id %>?_method=DELETE" method="POST" style="display:inline;">
+                  <button type="submit" class="btn-flat tooltipped" data-position="top" data-tooltip="Eliminar" onclick="return confirm('¿Eliminar este post?')">
+                    <i class="material-icons red-text">delete</i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      M.AutoInit();
+    });
+  </script>
+</body>
+</html>

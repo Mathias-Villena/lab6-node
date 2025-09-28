@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Post - Social Media</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0f7fa 0%, #fff 100%);
+    }
+    .card-panel {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 1.5px 3px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      margin-top: 40px;
+      transition: box-shadow 0.3s;
+    }
+    .btn-piola {
+      background: linear-gradient(90deg, #26a69a 60%, #00bfae 100%);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(38,166,154,0.2);
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-piola:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 16px rgba(38,166,154,0.25);
+      background: linear-gradient(90deg, #00bfae 60%, #26a69a 100%);
+    }
+    .input-field label {
+      color: #26a69a !important;
+    }
+    .input-field input:focus + label,
+    .input-field textarea:focus + label {
+      color: #00bfae !important;
+    }
+    .input-field input:focus,
+    .input-field textarea:focus {
+      border-bottom: 2px solid #00bfae !important;
+      box-shadow: 0 1px 0 0 #00bfae !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="/" class="brand-logo center">Social Media</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h4 class="center-align" style="margin-top:32px;">Editar Post</h4>
+
+    <!-- Formulario para editar un post -->
+    <div class="row">
+      <form class="col s12 m8 offset-m2 card-panel z-depth-3" 
+            action="/posts/<%= post._id %>?_method=PUT" 
+            method="POST">
+        
+        <h5 class="teal-text center-align">Modifica los datos del post</h5>
+
+        <div class="input-field">
+          <select name="userId" required>
+            <% users.forEach(user => { %>
+              <option value="<%= user._id %>" 
+                <%= post.user && post.user._id.toString() === user._id.toString() ? 'selected' : '' %>>
+                <%= user.name %> <%= user.lastName %>
+              </option>
+            <% }) %>
+          </select>
+          <label>Autor</label>
+        </div>
+
+        <div class="input-field">
+          <input id="title" name="title" type="text" 
+                 value="<%= post.title %>" 
+                 required minlength="5" maxlength="30">
+          <label for="title" class="active">Título</label>
+        </div>
+
+        <div class="input-field">
+          <textarea id="content" name="content" 
+                    class="materialize-textarea" required minlength="10"><%= post.content %></textarea>
+          <label for="content" class="active">Contenido</label>
+        </div>
+
+        <div class="input-field">
+          <input id="hashtags" name="hashtags" type="text" 
+                 value="<%= post.hashtags ? post.hashtags.join(',') : '' %>" 
+                 placeholder="#ejemplo,#nodejs">
+          <label for="hashtags" class="active">Hashtags (separados por coma)</label>
+        </div>
+
+        <div class="input-field">
+          <input id="imageUrl" name="imageUrl" type="text" 
+                 value="<%= post.imageUrl %>" 
+                 placeholder="https://...">
+          <label for="imageUrl" class="active">URL de imagen</label>
+        </div>
+
+        <div class="center-btn" style="margin-top:24px; display:flex; justify-content:space-between;">
+          <a href="/" class="btn grey lighten-1 waves-effect">
+            <i class="material-icons left">arrow_back</i> CANCELAR
+          </a>
+          <button class="btn btn-piola waves-effect waves-light" type="submit">
+            <i class="material-icons left">save</i> GUARDAR CAMBIOS
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      M.AutoInit();
+    });
+  </script>
+</body>
+</html>
